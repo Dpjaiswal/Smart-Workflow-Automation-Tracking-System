@@ -18,6 +18,113 @@ On the login screen, you can click the **Quick Preset Pills** to automatically l
 
 ## System Architecture
 
+```mermaid
+graph TD
+    Client[React Client SPA] -->|JWT Auth Header| Gateway[FastAPI Backend Gateway]
+    Gateway -->|CORS Middleware| Auth[JWT Token Validation]
+    Gateway -->|Endpoints| Routers[Role-Guarded Routers]
+    Routers -->|SQLAlchemy ORM| DB[(SQLite Database)]
+    Routers -->|Services| NotificationSystem[In-App Alerts Manager]
+    Routers -->|Services| AuditSystem[System Audit Logger]
+```
+
+## Database Entity-Relationship (ER) Diagram
+
+```mermaid
+erDiagram
+    USERS {
+        int id PK
+        string email
+        string hashed_password
+        string full_name
+        string role
+        boolean is_active
+        datetime created_at
+    }
+    PROJECTS {
+        int id PK
+        string name
+        string description
+        string status
+        int manager_id FK
+        datetime created_at
+        datetime updated_at
+    }
+    TASKS {
+        int id PK
+        string title
+        string description
+        string status
+        string priority
+        int project_id FK
+        int assigned_to_id FK
+        int created_by_id FK
+        datetime due_date
+        datetime created_at
+    }
+    APPROVALS {
+        int id PK
+        string type
+        string status
+        int requested_by_id FK
+        int assigned_to_id FK
+        int related_id FK
+        string details
+        string comments
+        datetime created_at
+    }
+    WORKLOGS {
+        int id PK
+        int user_id FK
+        int project_id FK
+        int task_id FK
+        date date
+        float hours_logged
+        string description
+        datetime created_at
+    }
+    TICKETS {
+        int id PK
+        string title
+        string description
+        string status
+        string priority
+        int client_id FK
+        int assigned_to_id FK
+        datetime created_at
+    }
+    NOTIFICATIONS {
+        int id PK
+        int user_id FK
+        string title
+        string message
+        boolean is_read
+        datetime created_at
+    }
+    AUDIT_LOGS {
+        int id PK
+        int user_id FK
+        string action
+        string details
+        datetime created_at
+    }
+
+    USERS ||--o{ PROJECTS : "manages"
+    USERS ||--o{ TASKS : "assigned_to"
+    USERS ||--o{ TASKS : "created_by"
+    USERS ||--o{ APPROVALS : "requested_by"
+    USERS ||--o{ APPROVALS : "assigned_to"
+    USERS ||--o{ WORKLOGS : "logs"
+    USERS ||--o{ TICKETS : "client"
+    USERS ||--o{ TICKETS : "assigned_to"
+    USERS ||--o{ NOTIFICATIONS : "user"
+    USERS ||--o{ AUDIT_LOGS : "user"
+
+    PROJECTS ||--o{ TASKS : "contains"
+    PROJECTS ||--o{ WORKLOGS : "tracks"
+    TASKS ||--o{ WORKLOGS : "tracks"
+```
+
 - **Backend:** Python + FastAPI + Uvicorn + SQLAlchemy
 - **Frontend:** React + Vite + TypeScript + Lucide Icons + Custom HSL Stylesheet
 - **Automation Triggers:**
