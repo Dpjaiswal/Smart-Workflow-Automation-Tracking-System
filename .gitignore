@@ -1,0 +1,24 @@
+# Python virtual environment and cache files
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.db
+swats.db
+
+# Node modules and build output
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Editor settings
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
