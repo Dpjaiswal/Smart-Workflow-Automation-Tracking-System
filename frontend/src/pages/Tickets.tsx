@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth, API_BASE } from '../context/AuthContext';
 import { Modal } from '../components/Modal';
-import { Plus, LifeBuoy, User, Calendar, CheckCircle } from 'lucide-react';
+import { AttachmentManager } from '../components/AttachmentManager';
+import { Plus, LifeBuoy, User, Calendar, CheckCircle, Paperclip } from 'lucide-react';
 
 interface Ticket {
   id: number;
@@ -30,6 +31,10 @@ export const Tickets: React.FC = () => {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [assigneeId, setAssigneeId] = useState('');
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  
+  // Attachments
+  const [isAttachmentModalOpen, setIsAttachmentModalOpen] = useState(false);
+  const [selectedEntityForAttachment, setSelectedEntityForAttachment] = useState<number | null>(null);
 
   const fetchTickets = async () => {
     try {
@@ -197,7 +202,18 @@ export const Tickets: React.FC = () => {
               </div>
 
               {/* Status workflow triggers based on role */}
-              <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
+              <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button 
+                    onClick={() => { setSelectedEntityForAttachment(t.id); setIsAttachmentModalOpen(true); }}
+                    className="btn btn-secondary" 
+                    style={{ fontSize: '11px', padding: '6px 12px', flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px' }}
+                  >
+                    <Paperclip size={12} />
+                    <span>Attachments</span>
+                  </button>
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
                 {(isAdmin || isManager) && (
                   <button 
                     onClick={() => handleOpenAssignModal(t)} 
@@ -226,6 +242,7 @@ export const Tickets: React.FC = () => {
                     Close Ticket
                   </button>
                 )}
+                </div>
               </div>
             </div>
           ))
@@ -299,6 +316,16 @@ export const Tickets: React.FC = () => {
           </form>
         )}
       </Modal>
+
+      {/* Attachment Manager Modal */}
+      {selectedEntityForAttachment && (
+        <AttachmentManager
+          isOpen={isAttachmentModalOpen}
+          onClose={() => { setIsAttachmentModalOpen(false); setSelectedEntityForAttachment(null); }}
+          entityType="ticket"
+          entityId={selectedEntityForAttachment}
+        />
+      )}
     </div>
   );
 };

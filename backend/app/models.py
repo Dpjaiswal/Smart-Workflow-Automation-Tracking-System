@@ -62,6 +62,7 @@ class Task(Base):
     assigned_to = relationship("User", back_populates="assigned_tasks", foreign_keys=[assigned_to_id])
     created_by = relationship("User", back_populates="created_tasks", foreign_keys=[created_by_id])
     worklogs = relationship("WorkLog", back_populates="task")
+    attachments = relationship("Attachment", back_populates="task", cascade="all, delete-orphan")
 
 class Approval(Base):
     __tablename__ = "approvals"
@@ -114,6 +115,7 @@ class Ticket(Base):
     # Relationships
     client = relationship("User", back_populates="client_tickets", foreign_keys=[client_id])
     assigned_to = relationship("User", back_populates="assigned_tickets", foreign_keys=[assigned_to_id])
+    attachments = relationship("Attachment", back_populates="ticket", cascade="all, delete-orphan")
 
 class Notification(Base):
     __tablename__ = "notifications"
@@ -139,3 +141,24 @@ class AuditLog(Base):
 
     # Relationships
     user = relationship("User", back_populates="audit_logs")
+
+class Attachment(Base):
+    __tablename__ = "attachments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String, nullable=False)
+    file_path = Column(String, nullable=False)
+    content_type = Column(String, nullable=False)
+    
+    task_id = Column(Integer, ForeignKey("tasks.id"), nullable=True)
+    ticket_id = Column(Integer, ForeignKey("tickets.id"), nullable=True)
+    approval_id = Column(Integer, ForeignKey("approvals.id"), nullable=True)
+    
+    uploaded_by_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    # Relationships
+    task = relationship("Task", back_populates="attachments")
+    ticket = relationship("Ticket", back_populates="attachments")
+    uploaded_by = relationship("User", foreign_keys=[uploaded_by_id])
+

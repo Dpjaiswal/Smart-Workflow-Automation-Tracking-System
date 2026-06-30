@@ -1,8 +1,15 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+import os
 from .database import SessionLocal
 from .seed import seed_database
-from .routers import auth, users, projects, tasks, approvals, worklogs, tickets, notifications, audit_logs, reports
+from .routers import auth, users, projects, tasks, approvals, worklogs, tickets, notifications, audit_logs, reports, attachments
+from .models import Base
+from .database import engine
+
+# Automatically create the table for Attachment since we added it to models
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="SWATS API", 
@@ -29,6 +36,12 @@ app.include_router(tickets.router)
 app.include_router(notifications.router)
 app.include_router(audit_logs.router)
 app.include_router(reports.router)
+app.include_router(attachments.router)
+
+# Mount uploads directory statically
+UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 @app.on_event("startup")
 def startup_event():

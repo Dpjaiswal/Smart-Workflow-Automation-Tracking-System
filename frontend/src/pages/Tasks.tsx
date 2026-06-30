@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth, API_BASE } from '../context/AuthContext';
 import { Modal } from '../components/Modal';
-import { Plus, Calendar, User } from 'lucide-react';
+import { AttachmentManager } from '../components/AttachmentManager';
+import { Plus, Calendar, User, Paperclip } from 'lucide-react';
 
 interface Task {
   id: number;
@@ -26,6 +27,10 @@ export const Tasks: React.FC = () => {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
   const [selectedTaskForApproval, setSelectedTaskForApproval] = useState<Task | null>(null);
+
+  // Attachments
+  const [isAttachmentModalOpen, setIsAttachmentModalOpen] = useState(false);
+  const [selectedEntityForAttachment, setSelectedEntityForAttachment] = useState<number | null>(null);
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -247,7 +252,18 @@ export const Tasks: React.FC = () => {
                       </div>
 
                       {/* Status quick changer or approval request triggers */}
-                      <div style={{ marginTop: '14px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button 
+                            onClick={() => { setSelectedEntityForAttachment(task.id); setIsAttachmentModalOpen(true); }}
+                            className="btn btn-secondary" 
+                            style={{ fontSize: '11px', padding: '6px 12px', flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px' }}
+                          >
+                            <Paperclip size={12} />
+                            <span>Attachments</span>
+                          </button>
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                         {isEmployee && task.status !== 'completed' && task.status !== 'in_review' && (
                           <>
                             {task.status === 'todo' && (
@@ -278,6 +294,7 @@ export const Tasks: React.FC = () => {
                             </select>
                           </div>
                         )}
+                        </div>
                       </div>
                     </div>
                   ))
@@ -408,6 +425,16 @@ export const Tasks: React.FC = () => {
           </form>
         )}
       </Modal>
+
+      {/* Attachment Manager Modal */}
+      {selectedEntityForAttachment && (
+        <AttachmentManager
+          isOpen={isAttachmentModalOpen}
+          onClose={() => { setIsAttachmentModalOpen(false); setSelectedEntityForAttachment(null); }}
+          entityType="task"
+          entityId={selectedEntityForAttachment}
+        />
+      )}
     </div>
   );
 };

@@ -195,3 +195,21 @@ class AuditLogResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+# ----------------- ATTACHMENT SCHEMAS -----------------
+class AttachmentBase(BaseModel):
+    filename: str
+    file_path: str
+    content_type: str
+    task_id: Optional[int] = None
+    ticket_id: Optional[int] = None
+    approval_id: Optional[int] = None
+
+class AttachmentResponse(AttachmentBase):
+    id: int
+    uploaded_by_id: int
+    created_at: datetime
+    uploaded_by: Optional[UserResponse] = None
+
+    class Config:
+        from_attributes = True
