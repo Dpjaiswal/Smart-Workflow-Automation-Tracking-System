@@ -132,6 +132,8 @@ erDiagram
   - When an Employee completes a task, they submit a **Task Completion Approval** to their Manager.
   - When the Manager approves the task completion request, the system **automatically** transitions the task's state to `completed`.
   - When a Client submits a support ticket, all Managers receive instant in-app notification alerts.
+  - **New:** File Attachments support on Tasks & Tickets via local static directory.
+  - **New:** Real-time chronological Comments & Activity Feeds on Tasks & Tickets.
 
 ---
 
