@@ -4,11 +4,11 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 from .database import SessionLocal
 from .seed import seed_database
-from .routers import auth, users, projects, tasks, approvals, worklogs, tickets, notifications, audit_logs, reports, attachments
+from .routers import auth, users, projects, tasks, approvals, worklogs, tickets, notifications, audit_logs, reports, attachments, comments
 from .models import Base
 from .database import engine
 
-# Automatically create the table for Attachment since we added it to models
+# Automatically create the table for Attachment and Comment since we added them to models
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -37,6 +37,7 @@ app.include_router(notifications.router)
 app.include_router(audit_logs.router)
 app.include_router(reports.router)
 app.include_router(attachments.router)
+app.include_router(comments.router)
 
 # Mount uploads directory statically
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")

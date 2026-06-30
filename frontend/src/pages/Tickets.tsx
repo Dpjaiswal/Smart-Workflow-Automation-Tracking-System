@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth, API_BASE } from '../context/AuthContext';
 import { Modal } from '../components/Modal';
 import { AttachmentManager } from '../components/AttachmentManager';
-import { Plus, LifeBuoy, User, Calendar, CheckCircle, Paperclip } from 'lucide-react';
+import { CommentSection } from '../components/CommentSection';
+import { Plus, LifeBuoy, User, Calendar, CheckCircle, Paperclip, MessageSquare } from 'lucide-react';
 
 interface Ticket {
   id: number;
@@ -35,6 +36,10 @@ export const Tickets: React.FC = () => {
   // Attachments
   const [isAttachmentModalOpen, setIsAttachmentModalOpen] = useState(false);
   const [selectedEntityForAttachment, setSelectedEntityForAttachment] = useState<number | null>(null);
+
+  // Comments
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [selectedEntityForComment, setSelectedEntityForComment] = useState<number | null>(null);
 
   const fetchTickets = async () => {
     try {
@@ -212,6 +217,14 @@ export const Tickets: React.FC = () => {
                     <Paperclip size={12} />
                     <span>Attachments</span>
                   </button>
+                  <button 
+                    onClick={() => { setSelectedEntityForComment(t.id); setIsCommentModalOpen(true); }}
+                    className="btn btn-secondary" 
+                    style={{ fontSize: '11px', padding: '6px 12px', flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px' }}
+                  >
+                    <MessageSquare size={12} />
+                    <span>Comments</span>
+                  </button>
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
                 {(isAdmin || isManager) && (
@@ -324,6 +337,16 @@ export const Tickets: React.FC = () => {
           onClose={() => { setIsAttachmentModalOpen(false); setSelectedEntityForAttachment(null); }}
           entityType="ticket"
           entityId={selectedEntityForAttachment}
+        />
+      )}
+
+      {/* Comment Section Modal */}
+      {selectedEntityForComment && (
+        <CommentSection
+          isOpen={isCommentModalOpen}
+          onClose={() => { setIsCommentModalOpen(false); setSelectedEntityForComment(null); }}
+          entityType="ticket"
+          entityId={selectedEntityForComment}
         />
       )}
     </div>

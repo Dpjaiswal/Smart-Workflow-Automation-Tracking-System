@@ -63,6 +63,7 @@ class Task(Base):
     created_by = relationship("User", back_populates="created_tasks", foreign_keys=[created_by_id])
     worklogs = relationship("WorkLog", back_populates="task")
     attachments = relationship("Attachment", back_populates="task", cascade="all, delete-orphan")
+    comments = relationship("Comment", back_populates="task", cascade="all, delete-orphan")
 
 class Approval(Base):
     __tablename__ = "approvals"
@@ -116,6 +117,7 @@ class Ticket(Base):
     client = relationship("User", back_populates="client_tickets", foreign_keys=[client_id])
     assigned_to = relationship("User", back_populates="assigned_tickets", foreign_keys=[assigned_to_id])
     attachments = relationship("Attachment", back_populates="ticket", cascade="all, delete-orphan")
+    comments = relationship("Comment", back_populates="ticket", cascade="all, delete-orphan")
 
 class Notification(Base):
     __tablename__ = "notifications"
@@ -161,4 +163,22 @@ class Attachment(Base):
     task = relationship("Task", back_populates="attachments")
     ticket = relationship("Ticket", back_populates="attachments")
     uploaded_by = relationship("User", foreign_keys=[uploaded_by_id])
+
+class Comment(Base):
+    __tablename__ = "comments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    content = Column(String, nullable=False)
+    
+    task_id = Column(Integer, ForeignKey("tasks.id"), nullable=True)
+    ticket_id = Column(Integer, ForeignKey("tickets.id"), nullable=True)
+    
+    author_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    # Relationships
+    task = relationship("Task", back_populates="comments")
+    ticket = relationship("Ticket", back_populates="comments")
+    author = relationship("User", foreign_keys=[author_id])
+
 

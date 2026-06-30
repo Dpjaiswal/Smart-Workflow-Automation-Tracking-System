@@ -213,3 +213,22 @@ class AttachmentResponse(AttachmentBase):
 
     class Config:
         from_attributes = True
+
+# ----------------- COMMENT SCHEMAS -----------------
+class CommentBase(BaseModel):
+    content: str
+    task_id: Optional[int] = None
+    ticket_id: Optional[int] = None
+
+class CommentCreate(CommentBase):
+    pass
+
+class CommentResponse(CommentBase):
+    id: int
+    author_id: int
+    created_at: datetime
+    author: Optional[UserResponse] = None
+
+    class Config:
+        from_attributes = True
+

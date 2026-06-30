@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth, API_BASE } from '../context/AuthContext';
 import { Modal } from '../components/Modal';
 import { AttachmentManager } from '../components/AttachmentManager';
-import { Plus, Calendar, User, Paperclip } from 'lucide-react';
+import { CommentSection } from '../components/CommentSection';
+import { Plus, Calendar, User, Paperclip, MessageSquare } from 'lucide-react';
 
 interface Task {
   id: number;
@@ -31,6 +32,10 @@ export const Tasks: React.FC = () => {
   // Attachments
   const [isAttachmentModalOpen, setIsAttachmentModalOpen] = useState(false);
   const [selectedEntityForAttachment, setSelectedEntityForAttachment] = useState<number | null>(null);
+
+  // Comments
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [selectedEntityForComment, setSelectedEntityForComment] = useState<number | null>(null);
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -262,6 +267,14 @@ export const Tasks: React.FC = () => {
                             <Paperclip size={12} />
                             <span>Attachments</span>
                           </button>
+                          <button 
+                            onClick={() => { setSelectedEntityForComment(task.id); setIsCommentModalOpen(true); }}
+                            className="btn btn-secondary" 
+                            style={{ fontSize: '11px', padding: '6px 12px', flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px' }}
+                          >
+                            <MessageSquare size={12} />
+                            <span>Comments</span>
+                          </button>
                         </div>
                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                         {isEmployee && task.status !== 'completed' && task.status !== 'in_review' && (
@@ -433,6 +446,16 @@ export const Tasks: React.FC = () => {
           onClose={() => { setIsAttachmentModalOpen(false); setSelectedEntityForAttachment(null); }}
           entityType="task"
           entityId={selectedEntityForAttachment}
+        />
+      )}
+
+      {/* Comment Section Modal */}
+      {selectedEntityForComment && (
+        <CommentSection
+          isOpen={isCommentModalOpen}
+          onClose={() => { setIsCommentModalOpen(false); setSelectedEntityForComment(null); }}
+          entityType="task"
+          entityId={selectedEntityForComment}
         />
       )}
     </div>
